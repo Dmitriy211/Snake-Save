@@ -13,7 +13,7 @@ namespace Snake
 
         public static void Serialize(Game game)
         {
-            FileStream fs = new FileStream("save.txt", FileMode.OpenOrCreate, FileAccess.ReadWrite);            
+            FileStream fs = new FileStream("save.xml", FileMode.OpenOrCreate, FileAccess.ReadWrite);            
             XmlSerializer xs = new XmlSerializer(typeof(Game));            
             xs.Serialize(fs, game);
             fs.Close();            
@@ -21,12 +21,12 @@ namespace Snake
 
         public static Game Deserialize()
         {
-            FileStream fs = new FileStream("save.txt", FileMode.Open, FileAccess.Read);
+            FileStream fs = new FileStream("save.xml", FileMode.Open, FileAccess.Read);
             XmlSerializer xs = new XmlSerializer(typeof(Game));
-            Game game = new Game();
-            game = xs.Deserialize(fs) as Game;
+            Game game2 = new Game();
+            game2 = xs.Deserialize(fs) as Game;
             fs.Close();
-            return game;            
+            return game2;            
         }
 
         static void Main(string[] args)
@@ -73,7 +73,7 @@ namespace Snake
                         s0 = true;
                 if (worm.body[0].Equals(food.location))
                     s1 = true;
-            }            
+            }           
 
             while (worm.isAlive)
             {                
@@ -120,8 +120,8 @@ namespace Snake
                         Game game = new Game(food, wall, worm);
                         Serialize(game);
                         break;
-                    case ConsoleKey.F9:                        
-                        Game game2 = Deserialize();
+                    case ConsoleKey.F9:
+                        Game game2 = Deserialize();                                              
                         food = game2.food;
                         wall = game2.wall;
                         worm = game2.worm;
@@ -129,14 +129,14 @@ namespace Snake
                 }
 
                 for (int i = 0; i < wall.bricks.Count; i++)
-                    if (wall.bricks[i].x == worm.body[0].x && wall.bricks[i].y == worm.body[0].y)
+                    if (wall.bricks[i].Equals(worm.body[0]))
                     {
                         worm.isAlive = false;
                     }
 
                 for (int i = 1; i < worm.body.Count; i++)
                 {
-                    if (worm.body[0].x == worm.body[i].x && worm.body[0].y == worm.body[i].y)
+                    if (worm.body[0].Equals(worm.body[i]))
                         worm.isAlive = false;
                 }
 
