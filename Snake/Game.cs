@@ -13,14 +13,18 @@ namespace Snake
         public Food food;
         public Wall wall;
         public Worm worm;
+        public int score;
+        public int l;
 
         public Game() { }
 
-        public Game(Food food, Wall wall, Worm worm)
+        public Game(Food food, Wall wall, Worm worm, int score, int l)
         {
             this.food = food;
             this.wall = wall;
-            this.wall = wall;
+            this.worm = worm;
+            this.score = score;
+            this.l = l;
         }
     }
 }

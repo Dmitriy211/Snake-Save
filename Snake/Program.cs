@@ -13,7 +13,7 @@ namespace Snake
 
         public static void Serialize(Game game)
         {
-            FileStream fs = new FileStream("save.xml", FileMode.OpenOrCreate, FileAccess.ReadWrite);            
+            FileStream fs = new FileStream("save.xml", FileMode.Truncate, FileAccess.Write);            
             XmlSerializer xs = new XmlSerializer(typeof(Game));            
             xs.Serialize(fs, game);
             fs.Close();            
@@ -30,8 +30,10 @@ namespace Snake
         }
 
         static void Main(string[] args)
-        {           
-            int l;
+        {
+        VeryBegin:
+            int l = 1;            
+           /*
             while (true)
             {
                 Console.Clear();
@@ -39,7 +41,10 @@ namespace Snake
                 l = int.Parse(Console.ReadLine());
                 if (l > 0 && l <= 5)
                     break;
-            }
+            } 
+           */
+        Begin:
+            int score = 0;
 
             Wall wall = new Wall(l);
             Worm worm = new Worm();
@@ -73,14 +78,18 @@ namespace Snake
                         s0 = true;
                 if (worm.body[0].Equals(food.location))
                     s1 = true;
-            }           
-
+            }                       
             while (worm.isAlive)
             {                
                 Console.Clear();                
                 worm.Draw();                               
                 food.Draw();                                                                                
-                wall.Draw();                                
+                wall.Draw();
+                Console.WriteLine("\n\nScore: {0}", score);
+                if (score >= 10)
+                {
+                    Console.WriteLine("\n\n Next level availible");
+                }
 
                 ConsoleKeyInfo pressedKey = Console.ReadKey();
                 switch (pressedKey.Key)
@@ -115,16 +124,33 @@ namespace Snake
                         break;
                     case ConsoleKey.Escape:
                         worm.isAlive = false;
-                        break;
+                        Console.Clear();
+                        goto End;                        
                     case ConsoleKey.F5:
-                        Game game = new Game(food, wall, worm);
-                        Serialize(game);
+                        Game game = new Game(food, wall, worm, score, l);
+                        Serialize(game);                        
                         break;
                     case ConsoleKey.F9:
                         Game game2 = Deserialize();                                              
                         food = game2.food;
                         wall = game2.wall;
                         worm = game2.worm;
+                        score = game2.score;
+                        l = game2.l;
+                        break;
+                    case ConsoleKey.OemPlus:
+                        if(score >=10)
+                        {
+                            l++;
+                            goto Begin;
+                        }
+                        break;
+                    case ConsoleKey.OemMinus:
+                        if (l > 1)
+                        {
+                            l--;
+                            goto Begin;
+                        }
                         break;
                 }
 
@@ -142,6 +168,7 @@ namespace Snake
 
                 if (worm.CanEat(food))
                 {
+                    score++;
                     bool f1 = true;
                     bool f2 = true;
                     while (f1==true || f2==true)
@@ -157,12 +184,15 @@ namespace Snake
                             if (wall.bricks[i].Equals(food.location))
                                 f2 = true;
                     }                  
-                }
+                }                
             }
 
             Console.Clear();
+            Console.WriteLine("GAME OVER\n\n Again?");
+            Console.ReadKey();
+            goto VeryBegin;
+        End:
             Console.WriteLine("GAME OVER");
-
         }
     }
 }
